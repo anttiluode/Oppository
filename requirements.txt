@@ -1,0 +1,4 @@
+numpy>=1.26
+opencv-python>=4.10
+pillow>=10
+# Install CUDA-enabled torch + torchvision from https://pytorch.org/get-started/locally/
