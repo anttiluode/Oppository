@@ -9,7 +9,6 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 
 import cv2
-import torch
 from PIL import Image, ImageTk
 
 from concrete_cache import CacheConfig
@@ -37,6 +36,7 @@ class OppositoryApp:
         self.last_packet = None
         self.photo_left = None
         self.photo_right = None
+        self.concrete_enabled = True
         self._build_ui()
         self.worker = threading.Thread(target=self._worker_loop, daemon=True)
         self.worker.start()
@@ -109,7 +109,8 @@ class OppositoryApp:
         bottom.columnconfigure(1, weight=1)
 
     def _toggle_label(self):
-        self.concrete_btn.configure(text="CONCRETE ON" if self.concrete.get() else "CONCRETE OFF — FULL RAFT")
+        self.concrete_enabled = bool(self.concrete.get())
+        self.concrete_btn.configure(text="CONCRETE ON" if self.concrete_enabled else "CONCRETE OFF — FULL RAFT")
 
     def _policy_changed(self, _=None):
         self.tol_label.configure(text=f"{self.tolerance.get():.2f}")
@@ -190,7 +191,7 @@ class OppositoryApp:
                     prev = frame
                     continue
 
-                result = engine.process(prev, frame, concrete_enabled=self.concrete.get())
+                result = engine.process(prev, frame, concrete_enabled=self.concrete_enabled)
                 prev = frame
                 now = time.perf_counter()
                 dt = now - last_t
